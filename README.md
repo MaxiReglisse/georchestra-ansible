@@ -7,3 +7,5 @@ la version originale est ici : https://github.com/landryb/georchestra-ansible
 cette branche prend en charge :
 - les certificats X509
 - l'authentification AD
+- les versions françaises de geonetwork et mapfishapp
+- une gestion classique et non geofence des droits
