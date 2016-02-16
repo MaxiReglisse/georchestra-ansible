@@ -1,0 +1,30 @@
+- name: installing sasl2-bin
+  tags: saslauth
+  apt: pkg=sasl2-bin state=installed update_cache=yes
+
+- name: openldap in sasl group
+  user: name=openldap groups=sasl append=yes
+
+- name: template saslauthd
+  template: src=saslauthd.j2 dest=/etc/default/saslauthd
+  notify: restart saslauthd
+
+- name: template saslauthd.conf
+  template: src=saslauthd.conf.j2 dest=/etc/saslauthd.conf
+  notify: restart saslauthd
+
+- name: template cn-config.ldif
+  template: src=cn-config.ldif.j2 dest=/tmp/LDAP/cn-config.ldif
+
+- name: test if olcSaslHost is in cn=config.ldif
+  shell: cat /etc/ldap/slapd.d/cn=config.ldif 
+  register: cn_config
+
+- name: add olcSaslHost in cn=config.ldif
+  command: sudo ldapmodify -Q -Y EXTERNAL -H ldapi:/// -f /tmp/LDAP/cn-config.ldif
+  when: "'olcSaslHost' not in cn_config.stdout"
+
+- name: template slapd with sasl
+  template: src=slapd.conf.j2 dest=/etc/ldap/sasl2/slapd.conf
+  notify: restart slapd
+
