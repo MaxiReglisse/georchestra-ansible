@@ -1,5 +1,6 @@
+### Ernest
+
 - name: installing sasl2-bin
-  tags: saslauth
   apt: pkg=sasl2-bin state=installed update_cache=yes
 
 - name: openldap in sasl group
@@ -13,18 +14,51 @@
   template: src=saslauthd.conf.j2 dest=/etc/saslauthd.conf
   notify: restart saslauthd
 
+- name: create temporary directory for saslauth
+  always_run: yes
+  shell: mktemp -d
+  register: tempdir
+
 - name: template cn-config.ldif
-  template: src=cn-config.ldif.j2 dest=/tmp/LDAP/cn-config.ldif
+  template: src=cn-config.ldif.j2 dest={{ tempdir.stdout }}/cn-config.ldif
 
 - name: test if olcSaslHost is in cn=config.ldif
   shell: cat /etc/ldap/slapd.d/cn=config.ldif 
   register: cn_config
 
 - name: add olcSaslHost in cn=config.ldif
-  command: sudo ldapmodify -Q -Y EXTERNAL -H ldapi:/// -f /tmp/LDAP/cn-config.ldif
+  command: ldapmodify -Q -Y EXTERNAL -H ldapi:/// -f "{{ tempdir.stdout }}/cn-config.ldif"
   when: "'olcSaslHost' not in cn_config.stdout"
 
 - name: template slapd with sasl
   template: src=slapd.conf.j2 dest=/etc/ldap/sasl2/slapd.conf
   notify: restart slapd
+
+- name: installing python-ldap
+  apt: pkg=python-ldap state=installed update_cache=yes
+
+- name: set georchestra LDAP
+  template: src=ldap.conf.j2 dest=/etc/ldap/ldap.conf
+
+- name: template ad2ldap_sync.py in root home
+  template: src=ad2ldap_sync.py.j2 
+            dest=/root/ad2ldap_sync.py 
+            owner=root group=root mode=0755
+
+- name: template .ldap.conf for root user
+  template: src=dot.ldap.conf.j2 dest=/root/.ldap.conf
+
+- name: import AD users in LDAP
+  command: /root/ad2ldap_sync.py
+
+- name: creates cronjob for ad2ldap_sync
+  cron: minute="1" hour="08-20" weekday="1-5"
+        name="import des utilisateur AD dans l'annuaire LDAP de geOrchestra"
+        user="root"
+        job="/root/ad2ldap_sync.py >> /var/log/georchestra/ad2ldap_sync.log"
+
+
+- name: recursively purge saslauth temp dir
+  always_run: yes
+  file: dest={{ tempdir.stdout }} state=absent
 

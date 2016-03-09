@@ -1,50 +1,36 @@
-- name: geoserver_datadir should exist
-  file: path={{ geoserver_datadir }} state=directory owner=tomcat8 group=tomcat8
-
 - name: checkout geoserver datadir
   sudo: yes
   sudo_user: tomcat8
-  git: repo=https://github.com/georchestra/geoserver_minimal_datadir.git dest={{ geoserver_datadir }} force=yes
+  git:
+    dest: "{{ geoserver.datadir.path }}"
+    repo: "{{ geoserver.datadir.gitrepo }}"
+    version: "{{ geoserver.datadir.gitversion }}"
+    force: yes
 
 - name: fix geoserver logging path
   sudo: yes
   sudo_user: tomcat8
-  lineinfile: dest={{ geoserver_datadir }}/logging.xml regexp='<location>/tmp/geoserver.log</location>' 
-              line='  <location>{{ logs_basedir }}/geoserver.log</location>'
+  lineinfile: dest={{ geoserver.datadir.path }}/logging.xml regexp='<location>/tmp/geoserver.log</location>' line='  <location>{{ logs_basedir }}/geoserver.log</location>'
 
 - name: set full geoserver url for getcapabilities docs
   sudo: yes
   sudo_user: tomcat8
-  lineinfile: dest={{ geoserver_datadir }}/global.xml regexp='<proxyBaseUrl>http://georchestra.mydomain.org/geoserver</proxyBaseUrl>' 
-              line='    <proxyBaseUrl>https://{{ georchestra_fqdn }}/geoserver</proxyBaseUrl>'
-  when: apache_fullhttps
-
-- name: set full geoserver url for getcapabilities docs
-  sudo: yes
-  sudo_user: tomcat8
-  lineinfile: dest={{ geoserver_datadir }}/global.xml regexp='<proxyBaseUrl>http://georchestra.mydomain.org/geoserver</proxyBaseUrl>' 
-              line='    <proxyBaseUrl>http://{{ georchestra_fqdn }}/geoserver</proxyBaseUrl>'
-  when: not apache_fullhttps
+  lineinfile: dest={{ geoserver.datadir.path }}/global.xml regexp='<proxyBaseUrl>https://georchestra.mydomain.org/geoserver</proxyBaseUrl>' line='    <proxyBaseUrl>https://{{ georchestra.fqdn }}/geoserver</proxyBaseUrl>'
 
 - name: set list of advertised wms srs
   sudo: yes
   sudo_user: tomcat8
-  lineinfile: dest={{ geoserver_datadir }}/wms.xml insertafter='</metadata>' 
-              line="<srs><string>{{ geoserver_wms_srslist|join('</string><string>') }}</string></srs>"
+  lineinfile: dest={{ geoserver.datadir.path }}/wms.xml insertafter='</metadata>' line="<srs><string>{{ geoserver.wms_srslist|join('</string><string>') }}</string></srs>"
 
 # alternative could be to checkout the geofence branch of geoserver_minimal_datadir
-- name: enforce geofence auth
-  sudo: yes
-  sudo_user: tomcat8
-  lineinfile:
-    dest: '{{ geoserver_datadir }}/security/auth/default/config.xml'
-    regexp: '  <className>org.geoserver.security.auth.UsernamePasswordAuthenticationProvider</className>'
-    line: '  <className>it.geosolutions.geoserver.authentication.auth.GeofenceAuthenticationProvider</className>'
-  when: geofence_auth
+#- name: enforce geofence auth
+#  sudo: yes
+#  sudo_user: tomcat8
+#  lineinfile:
+#    dest: '{{ geoserver.datadir.path }}/security/auth/default/config.xml'
+#    regexp: '  <className>org.geoserver.security.auth.UsernamePasswordAuthenticationProvider</className>'
+#    line: '  <className>it.geosolutions.geoserver.authentication.auth.GeofenceAuthenticationProvider</className>'
 
 - name: create geowebcache datadir
   file: dest={{ geowebcache_datadir }} owner=tomcat8 state=directory
-
-- name: create extractordatadir
-  file: dest={{ extractor_datadir }} owner=tomcat8 state=directory
 

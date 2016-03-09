@@ -1,5 +1,5 @@
 <VirtualHost *:80>
-     ServerName {{ georchestra_fqdn }}
+     ServerName {{ georchestra.fqdn }}
      DocumentRoot /var/www/georchestra/htdocs
      LogLevel warn
      ErrorLog /var/www/georchestra/logs/error.log
@@ -8,15 +8,15 @@
      ServerSignature Off
 </VirtualHost>
 <VirtualHost *:443>
-     ServerName {{ georchestra_fqdn }}
+     ServerName {{ georchestra.fqdn }}
      DocumentRoot /var/www/georchestra/htdocs
      LogLevel warn
      ErrorLog /var/www/georchestra/logs/error.log
      CustomLog /var/www/georchestra/logs/access.log "combined"
      Include /var/www/georchestra/conf/*.conf
      SSLEngine On
-     SSLCertificateFile /var/www/georchestra/ssl/x509/cert-{{ apache_certnumber }}-{{ georchestra_fqdn }}.pem
-     SSLCertificateKeyFile /var/www/georchestra/ssl/x509/{{ georchestra_fqdn }}.key
-     SSLCACertificateFile /var/www/georchestra/ssl/x509/chain-{{ apache_certnumber }}-{{ georchestra_fqdn }}.pem
+     SSLCertificateFile /var/www/georchestra/ssl/x509/cert-{{ x509.certnumber }}-{{ georchestra.fqdn }}.pem
+     SSLCertificateKeyFile /var/www/georchestra/ssl/x509/{{ georchestra.fqdn }}.key
+     SSLCACertificateFile /var/www/georchestra/ssl/x509/chain-{{ x509.certnumber }}-{{ georchestra.fqdn }}.pem
      ServerSignature Off
 </VirtualHost>

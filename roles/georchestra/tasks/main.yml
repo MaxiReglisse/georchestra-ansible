@@ -1,11 +1,35 @@
-- name: create toplevel datadirs
+- name: create datadirs
   tags: wars
-  file: path=/srv/{{ item }} state=directory owner=tomcat8 group=tomcat8
+  file: path={{ item }} state=directory owner=tomcat8 group=tomcat8
   with_items:
-  - data
+  - "{{ geonetwork.datadir.path }}"
+  - "{{ geoserver.datadir.path }}"
+  - "{{ geowebcache_datadir }}"
+  - "{{ extractor_datadir }}"
 
-- include: wars.yml tags=wars
-- include: geoserver.yml tags=geoserver
-- include: nativelibs.yml tags=nativelibs
-- include: geonetwork.yml tags=geonetwork
-- include: config.yml tags=config
+- include: config.yml
+  tags: config
+
+- include: war_cadastrapp.yml
+  tags: cadastrapp_war
+  when: cadastrapp.enabled
+
+- include: geoserver.yml
+  tags: geoserver
+
+- include: geonetwork.yml
+  tags: geonetwork
+
+- include: wars.yml
+  tags: wars
+
+- include: nativelibs.yml
+  tags: nativelibs
+
+- include: cadastrapp.yml
+  tags: cadastrapp_addon
+  when: cadastrapp.enabled
+
+- include: clean.yml
+  tags: [cleanup, georchestra_cleanup]
+  when: cleanup is defined

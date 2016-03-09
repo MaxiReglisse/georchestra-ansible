@@ -1,0 +1,10 @@
+[IN_LDAP]
+IN_LDAP_URI    = ldap://{{ saslauth.ad.server }}:389
+IN_LDAP_BINDDN = {{ saslauth.ad.admindn }}
+IN_LDAP_PASSWD = {{ saslauth.ad.adminpw }}
+
+[OUT_LDAP]
+OUT_LDAP_URI    = ldap://localhost:389
+OUT_LDAP_BINDDN = {{ openldap.rootdn }}
+OUT_LDAP_PASSWD = {{ openldap.rootpw }}
+

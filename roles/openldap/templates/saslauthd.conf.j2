@@ -2,14 +2,14 @@
 
 # http://www.openldap.org/doc/admin24/security.html
 
-ldap_servers: ldap://{{ ad_server }}
-ldap_search_base: {{ ad_search_base }}
+ldap_servers: ldap://{{ saslauth.ad.server }}
+ldap_search_base: {{ saslauth.ad.search_base }}
 ldap_timeout: 10
 ldap_filter: (userPrincipalName=%u)
 #ldap_filter: sAMAccountName=%U
 #ldap_filter: uid=%u
-ldap_bind_dn: {{ ad_bind_dn }}
-ldap_password: {{ ad_password }}
+ldap_bind_dn: {{ saslauth.ad.admindn }}
+ldap_password: {{ saslauth.ad.adminpw }}
 ldap_deref: never
 ldap_restart: yes
 ldap_scope: sub

@@ -1,0 +1,44 @@
+### Ernest
+
+- name: create x509_basedir
+  file: name=/var/www/georchestra/ssl/x509 state=directory
+
+- name: install x509 certs
+  template: src=apache2/{{ item }}.j2 dest=/var/www/georchestra/ssl/x509/{{ item }}
+  with_items:
+  - "{{ georchestra.fqdn }}.key"
+  - "cert-{{ x509.certnumber }}-{{ georchestra.fqdn }}.pem"
+  - "chain-{{ x509.certnumber }}-{{ georchestra.fqdn }}.pem"
+  when: x509.enabled
+
+- name: template georchestra vhost with x509 cert
+  template: src=apache2/georchestra-x509.conf.j2 dest=/etc/apache2/sites-available/georchestra.conf
+  notify: reload apache2
+  when: x509.enabled
+
+- name: update ca-certificates
+  command: update-ca-certificates -f
+  when: x509.enabled
+
+- name: import ca-certificates in keystore
+  command: >
+    keytool 
+      -importkeystore 
+      -srckeystore /etc/ssl/certs/java/cacerts 
+      -destkeystore /etc/tomcat8/keystore 
+      -deststorepass {{ tomcat_keystore_pass }} 
+      -srcstorepass changeit 
+      -noprompt
+  when: x509.enabled
+
+- name: import x509 cert in keystore
+  command: >
+    keytool 
+    -import 
+    -alias georchestra_ssl_cert 
+    -file /var/www/georchestra/ssl/x509/cert-{{ x509.certnumber }}-{{ georchestra.fqdn }}.pem
+    -keystore /etc/tomcat8/keystore 
+    -deststorepass {{ tomcat_keystore_pass }} 
+    -noprompt
+  when: x509.enabled
+
