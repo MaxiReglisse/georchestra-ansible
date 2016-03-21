@@ -48,7 +48,7 @@
       }
     }
     georchestra: {
-      fqdn: georchestra.demo.craig.fr,
+      fqdn: georchestra.demo.mydomain.org,
       db: {
         name: georchestra,
         user: georchestra,
@@ -99,7 +99,7 @@
       enabled: false,
       certnumber: 0
     }
-    ldapadmin_adminemail: admin@craig.fr
+    ldapadmin_adminemail: admin@mydomain.org
     tomcat_instances: {
       proxycas: { port: 8180, control_port: 8105 },
       geoserver: { port: 8280, control_port: 8205 },
