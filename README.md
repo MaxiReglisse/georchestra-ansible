@@ -1,5 +1,5 @@
-Adding X509 cert and Active Directory authentification to georchestra-ansible
-=============================================================================
+Adding X509 cert and Active Directory authentification to georchestra-ansible (geOrchestra-15.12)
+=================================================================================================
 
 geOrchestra-ansible proposes a simple ansible playbook to deploy a fullblown geOrchestra SDI instance.
 
