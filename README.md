@@ -14,15 +14,15 @@ Look particularly the saslauth.yml file (https://github.com/MaxiReglisse/georche
 Take a look at the x509.yml file  (https://github.com/MaxiReglisse/georchestra-ansible/blob/devel/roles/apache/tasks/x509.yml) and 
 organize public and private keys in the templates directory like that :
 
-roles/apache/templates
-├── apache2
-│   ├── cert-xxxxx-georchestra.mydomain.org.pem.j2
-│   ├── chain-xxxxx-georchestra.mydomain.org.pem.j2
-│   ├── georchestra.conf.j2
-│   ├── georchestra.georchestra.mydomain.org.key.j2
-│   └── georchestra-x509.conf.j2
-├── common.conf.j2
-├── georchestra.j2
-└── global.conf.j2
+    roles/apache/templates
+    ├── apache2
+    │   ├── cert-xxxxx-georchestra.mydomain.org.pem.j2
+    │   ├── chain-xxxxx-georchestra.mydomain.org.pem.j2
+    │   ├── georchestra.conf.j2
+    │   ├── georchestra.georchestra.mydomain.org.key.j2
+    │   └── georchestra-x509.conf.j2
+    ├── common.conf.j2
+    ├── georchestra.j2
+    └── global.conf.j2
 
 
