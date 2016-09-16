@@ -89,7 +89,7 @@ ATTRIBUTES_MAPPING = {
 }
 
 OUT_USERS_BASEDN  = "ou=users,dc=georchestra,dc=univ-fcomte,dc=fr"
-OUT_GROUPS_BASEDN = "ou=groups,dc=georchestra,dc=univ-fcomte,dc=fr"
+OUT_ROLES_BASEDN = "ou=roles,dc=georchestra,dc=univ-fcomte,dc=fr"
 OUT_DEFAULT_GROUPS = [ 'SV_USER' ]
 OUT_GROUP_MEMBER = 'member'
 OUT_USER_FILTER = '(objectClass=inetOrgPerson)'
@@ -174,7 +174,7 @@ def openldap_remove_user(uid, dry_run = False):
 # Adds a user to a group
 def openldap_add_user_to_group(user_uid, group_uid, dry_run):
   user_dn = "uid=%s,%s" % (user_uid, OUT_USERS_BASEDN,)
-  group_dn = "cn=%s,%s" % (group_uid, OUT_GROUPS_BASEDN,)
+  group_dn = "cn=%s,%s" % (group_uid, OUT_ROLES_BASEDN,)
   mod_attrs = [(ldap.MOD_ADD, OUT_GROUP_MEMBER, user_dn)]
   if not dry_run:
     try:
